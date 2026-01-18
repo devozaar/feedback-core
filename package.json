@@ -1,0 +1,53 @@
+{
+  "name": "@devozaar/feedback-core",
+  "version": "0.1.0",
+  "description": "Framework-agnostic, headless TypeScript feedback collection library",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "feedback",
+    "headless",
+    "typescript",
+    "zod",
+    "validation",
+    "plugin"
+  ],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "zod": "^4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "zod": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.8",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0",
+    "zod": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
