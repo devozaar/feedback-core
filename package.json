@@ -31,7 +31,15 @@
     "validation",
     "plugin"
   ],
-  "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devozaar/feedback-core.git"
+  },
+  "bugs": {
+    "url": "https://github.com/devozaar/feedback-core/issues"
+  },
+  "homepage": "https://github.com/devozaar/feedback-core#readme",
+  "author": "Devozaar/Samik Prakash",
   "license": "MIT",
   "peerDependencies": {
     "zod": "^4.0.0"
