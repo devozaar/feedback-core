@@ -83,6 +83,17 @@ flowchart TD
   Y --> Z["onError hooks"]
 ```
 
+## Default Behaviors
+
+If you don’t register plugins or handlers, `collect()` still runs and returns a `FeedbackItem`, but the system stays silent.
+
+- **Handlers**: none by default — no side effects happen unless you register a handler.
+- **Validators**: if no schema and no validator plugins are provided, validation passes.
+- **Transformers**: none by default — the item is returned unchanged.
+- **Retry**: only applies when handlers exist and throw errors.
+- **Metadata**: `defaultMetadata` is merged with per-call metadata (per-call wins).
+- **Hooks**: `beforeCollect`, `afterCollect`, and `onError` still run if registered.
+
 ## Configuration
 
 ```typescript
