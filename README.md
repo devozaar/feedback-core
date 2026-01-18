@@ -13,7 +13,17 @@ A framework-agnostic, headless TypeScript library for collecting feedback. Zero 
 ## Installation
 
 ```bash
-npm install @devozaar/feedback-core zod
+npm install @devozaar/feedback-core
+```
+
+### Optional: Zod for schema validation
+
+Install Zod **only if** you plan to use schema validation (`schema`, `withSchema`,
+`createZodValidator`, or `validateWithSchema`). If you don’t use those APIs, you
+do **not** need Zod.
+
+```bash
+npm install zod
 ```
 
 > **Note**: `zod@^4.0.0` is a peer dependency.
@@ -44,6 +54,8 @@ collector.use(new ConsoleHandler());
 // Collect feedback
 await collector.collect({ score: 9, comment: "Great product!" });
 ```
+
+> This example uses Zod schema validation, so `zod` must be installed.
 
 ## Code Flow Summary
 
@@ -219,6 +231,52 @@ const analyticsHandler: HandlerPlugin<NpsScore> = {
 
 collector.use(profanityFilter).use(enricher).use(analyticsHandler);
 ```
+
+### Schema Validation (Zod)
+
+If you want schema-based validation, use the built-in Zod plugin helpers. You
+can wire this in two ways:
+
+**Option A: Pass `schema` to the collector**
+
+```typescript
+import { FeedbackCollector } from "@devozaar/feedback-core";
+import { z } from "zod";
+
+const NpsSchema = z.object({
+  score: z.number().min(0).max(10),
+  comment: z.string().optional(),
+});
+
+const collector = new FeedbackCollector({
+  type: "nps",
+  schema: NpsSchema,
+});
+```
+
+**Option B: Register the Zod validator plugin manually**
+
+```typescript
+import { FeedbackCollector, createZodValidator } from "@devozaar/feedback-core";
+import { z } from "zod";
+
+const NpsSchema = z.object({
+  score: z.number().min(0).max(10),
+  comment: z.string().optional(),
+});
+
+const collector = new FeedbackCollector({ type: "nps" });
+collector.use(createZodValidator(NpsSchema));
+```
+
+**Validate without collecting**
+
+```typescript
+const result = collector.validate({ score: 11 });
+if (!result.valid) console.log(result.errors);
+```
+
+> These APIs require `zod` to be installed.
 
 ## Lifecycle Hooks
 
