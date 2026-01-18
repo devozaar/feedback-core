@@ -50,6 +50,14 @@ export interface CollectorConfig<T = unknown> {
 }
 
 /**
+ * Helper to define configuration with type inference.
+ * @template T - The type of feedback data
+ */
+export function defineConfig<T>(config: CollectorConfig<T>): CollectorConfig<T> {
+  return config;
+}
+
+/**
  * Default retry configuration.
  */
 export const DEFAULT_RETRY_CONFIG: Required<Omit<RetryConfig, 'retryOn'>> = {

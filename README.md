@@ -45,6 +45,44 @@ collector.use(new ConsoleHandler());
 await collector.collect({ score: 9, comment: "Great product!" });
 ```
 
+## Code Flow Summary
+
+**Simple flow overview**
+
+- `collect()` is the single entry point.
+- Optional debouncing buffers rapid submissions.
+- `beforeCollect` hooks can short-circuit collection.
+- Schema + validator plugins validate input.
+- A `FeedbackItem` is created and transformed.
+- Handler plugins run (optionally with retry + `onRetry` hooks).
+- `afterCollect` hooks run on success.
+- Any error triggers `onError` hooks with a phase hint.
+
+```mermaid
+flowchart TD
+  A["collect(data, metadata?)"] --> B{Debounce configured?}
+  B -- Yes --> C["Debouncer buffers call"]
+  C --> D["executeCollection()"]
+  B -- No --> D["executeCollection()"]
+  D --> E["beforeCollect hooks"]
+  E --> F{Cancelled?}
+  F -- Yes --> X["CollectionCancelledError"]
+  F -- No --> G["Schema + validator plugins"]
+  G --> H{Valid?}
+  H -- No --> Y["ValidationError"]
+  H -- Yes --> I["Create FeedbackItem"]
+  I --> J["Transformer plugins"]
+  J --> K["Handler plugins"]
+  K --> L{Retry enabled?}
+  L -- Yes --> M["withRetry + onRetry hooks"]
+  L -- No --> N["Handle once"]
+  M --> O["After handlers"]
+  N --> O
+  O --> P["afterCollect hooks"]
+  X --> Z["onError hooks"]
+  Y --> Z["onError hooks"]
+```
+
 ## Configuration
 
 ```typescript
@@ -102,6 +140,27 @@ collector.use(
       method: "POST",
       body: JSON.stringify(item),
     });
+  })
+);
+
+// Supabase Example
+import { createClient } from "@supabase/supabase-js";
+
+const supabase = createClient("YOUR_URL", "YOUR_KEY");
+
+collector.use(
+  new CallbackHandler(async (item) => {
+    const { error } = await supabase
+      .from("feedback")
+      .insert({
+        id: item.id,
+        type: item.type,
+        data: item.data,
+        metadata: item.metadata,
+        created_at: new Date(item.timestamp).toISOString(),
+      });
+
+    if (error) throw error;
   })
 );
 ```
